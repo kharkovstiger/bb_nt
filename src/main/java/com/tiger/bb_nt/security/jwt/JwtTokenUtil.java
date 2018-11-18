@@ -1,6 +1,5 @@
 package com.tiger.bb_nt.security.jwt;
 
-import com.mealdeal.prototype.security.AuthorizedUser;
 import com.tiger.bb_nt.security.AuthorizedUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -104,18 +103,18 @@ public class JwtTokenUtil implements Serializable {
     private Boolean isCreatedBeforeLastPasswordReset(Date created, Date lastPasswordReset) {
         return (lastPasswordReset != null && created.before(lastPasswordReset));
     }
-//
-//    private String generateAudience(Device device) {
-//        String audience = AUDIENCE_UNKNOWN;
-//        if (device.isNormal()) {
-//            audience = AUDIENCE_WEB;
-//        } else if (device.isTablet()) {
-//            audience = AUDIENCE_TABLET;
-//        } else if (device.isMobile()) {
-//            audience = AUDIENCE_MOBILE;
-//        }
-//        return audience;
-//    }
+
+    private String generateAudience(Device device) {
+        String audience = AUDIENCE_UNKNOWN;
+        if (device.isNormal()) {
+            audience = AUDIENCE_WEB;
+        } else if (device.isTablet()) {
+            audience = AUDIENCE_TABLET;
+        } else if (device.isMobile()) {
+            audience = AUDIENCE_MOBILE;
+        }
+        return audience;
+    }
 
     private Boolean ignoreTokenExpiration(String token) {
         String audience = getAudienceFromToken(token);
@@ -125,7 +124,7 @@ public class JwtTokenUtil implements Serializable {
     public String generateToken(UserDetails userDetails, Device device) {
         Map<String, Object> claims = new HashMap<>();
         claims.put(CLAIM_KEY_USERNAME, userDetails.getUsername());
-        claims.put(CLAIM_KEY_AUDIENCE, AUDIENCE_WEB);
+        claims.put(CLAIM_KEY_AUDIENCE, generateAudience(device));
         claims.put(CLAIM_KEY_CREATED, new Date());
         return generateToken(claims);
     }

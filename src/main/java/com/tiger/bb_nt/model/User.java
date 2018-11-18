@@ -11,15 +11,17 @@ import java.util.Set;
 
 @Data
 @Document
-@EqualsAndHashCode(of = "login")
+@EqualsAndHashCode(of = "id")
 public class User implements Serializable {
     
     @Id
+    private String id;
     private String login;
     private String code;
     private String phone;
     private String alias;
     private String team;
+    private String country;
     
     @Email
     private String email;

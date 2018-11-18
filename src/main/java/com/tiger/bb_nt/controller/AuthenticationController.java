@@ -1,6 +1,5 @@
 package com.tiger.bb_nt.controller;
 
-import com.google.api.client.googleapis.auth.oauth2.*;
 import com.tiger.bb_nt.model.User;
 import com.tiger.bb_nt.security.SecUserDetailsService;
 import com.tiger.bb_nt.security.jwt.JwtAuthenticationRequest;
@@ -28,9 +27,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
-@RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-public class AuthenticationRestController {
+@RestController()
+@RequestMapping(value = "/api/auth", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+public class AuthenticationController {
 
     private final Log logger = LogFactory.getLog(this.getClass());
 
@@ -43,48 +42,48 @@ public class AuthenticationRestController {
 
     private final SecUserDetailsService secUserDetailsService;
 
-    private final JwtAuthService jwtAuthService;
-
     private final UserService userService;
 
-    //String CLIENT_SECRET_FILE = "D:\\NeighBro\\server\\secret\\client_secret.json";
-    private final String CLIENT_SECRET_FILE = "secret/client_secret.json";
-    private final String CLIENT_ID_IOS = "88033795714-8s4o1oet0sklm2psk28oksq3j5fcvvh9.apps.googleusercontent.com";
-    private final String CLIENT_ID_ANDROID = "194299677119-htja39orrub97t9ita40dsnf253nm3mh.apps.googleusercontent.com";
-    private final String CLIENT_ID_WEB = "588816424784-15reots8ukm66tedavq6g2vc98uaq8pj.apps.googleusercontent.com";
-
     @Autowired
-    public AuthenticationRestController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, SecUserDetailsService secUserDetailsService, JwtAuthService jwtAuthService, UserService userService) {
+    public AuthenticationController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, 
+                                    SecUserDetailsService secUserDetailsService, UserService userService) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenUtil = jwtTokenUtil;
         this.secUserDetailsService = secUserDetailsService;
-        this.jwtAuthService = jwtAuthService;
         this.userService = userService;
     }
 
-    @PostMapping(value = "${jwt.route.authentication.path}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest) throws AuthenticationException {
-
-        String emailLowerCase = authenticationRequest.getEmail().toLowerCase();
-        // Perform the security
-        try {
-            final Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            emailLowerCase,
-                            authenticationRequest.getPassword()
-                    )
-            );
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        } catch (BadCredentialsException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+    @PostMapping()
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest, Device device) {
+        String loginLowerCase = authenticationRequest.getLogin().toLowerCase();
+        User currentUser = userService.getByLogin(loginLowerCase);
+        
+        if (currentUser!=null) {
+            // Perform the security
+            try {
+                final Authentication authentication = authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(
+                                loginLowerCase,
+                                authenticationRequest.getCode()
+                        )
+                );
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            } catch (BadCredentialsException e) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } else {
+            try {
+                currentUser=userService.createUser(authenticationRequest);
+            } catch (Exception e) {
+                return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+            }
         }
 
-        // Reload password post-security so we can generate token
-        final UserDetails userDetails = secUserDetailsService.loadUserByUsername(emailLowerCase);
+        // Reload code post-security so we can generate token
+        final UserDetails userDetails = secUserDetailsService.loadUserByUsername(loginLowerCase);
         final String token = jwtTokenUtil.generateToken(userDetails, device);
-        User currentUser = userService.getByEmail(emailLowerCase);
+        
         UserWithJwt userWithJwt = new UserWithJwt(token, currentUser);
-        //JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse(token);
 
         // Return the token
         return ResponseEntity.ok(userWithJwt);
