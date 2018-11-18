@@ -2,7 +2,7 @@ package com.tiger.bb_nt.config;
 
 import com.tiger.bb_nt.security.SecUserDetailsService;
 import com.tiger.bb_nt.security.jwt.JwtAuthenticationEntryPoint;
-import com.tiger.bb_nt.security.jwt.JwtAuthenticationTokenFilter;
+import com.tiger.bb_nt.filter.JwtAuthenticationTokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
