@@ -4,13 +4,15 @@ import com.tiger.bb_nt.dao.UserRepository;
 import com.tiger.bb_nt.model.Role;
 import com.tiger.bb_nt.model.User;
 import com.tiger.bb_nt.security.jwt.JwtAuthenticationRequest;
+import com.tiger.bb_nt.util.XMLUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import javax.security.auth.login.LoginException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -23,11 +25,13 @@ public class DefaultUserService implements UserService {
     
     private final UserRepository userRepository;
     private final BBAPIService bbapiService;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public DefaultUserService(UserRepository userRepository, BBAPIService bbapiService) {
+    public DefaultUserService(UserRepository userRepository, BBAPIService bbapiService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.bbapiService = bbapiService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -36,17 +40,18 @@ public class DefaultUserService implements UserService {
     }
 
     @Override
-    public User createUser(JwtAuthenticationRequest authenticationRequest) {
+    public User createUser(JwtAuthenticationRequest authenticationRequest) throws LoginException {
         String json=bbapiService.login(authenticationRequest.getLogin(), authenticationRequest.getCode(),1).getBody();
-        //TODO check that login was successful
-        Document doc=getDocument(json);
-        NodeList nodeList=doc.getElementsByTagName("team");
+        Document doc= XMLUtils.getDocument(json);
+        if (doc.getElementsByTagName("team").item(0)==null){
+            throw new LoginException();
+        }
         
         User user=new User();
         user.setLogin(authenticationRequest.getLogin());
-        user.setCode(authenticationRequest.getCode());
+        user.setCode(passwordEncoder.encode(authenticationRequest.getCode()));
         user.setAlias(doc.getElementsByTagName("owner").item(0).getTextContent().trim());
-        user.setId(doc.getAttributes().getNamedItem("id").getTextContent().trim());
+        user.setId(doc.getElementsByTagName("team").item(0).getAttributes().getNamedItem("id").getNodeValue());
         Set<Role> roles=new HashSet<>();
         roles.add(Role.USER);
         user.setRoles(roles);
@@ -55,19 +60,5 @@ public class DefaultUserService implements UserService {
         
         user=userRepository.save(user);
         return user;
-    }
-
-    private Document getDocument(String s){
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder;
-        Document doc = null;
-        try {
-            dBuilder = dbFactory.newDocumentBuilder();
-            doc = dBuilder.parse(new InputSource(new StringReader(s)));
-            doc.getDocumentElement().normalize();
-        } catch (ParserConfigurationException | IOException | SAXException e) {
-            e.printStackTrace();
-        }
-        return doc;
     }
 }

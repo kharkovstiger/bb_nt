@@ -4,7 +4,6 @@ import com.tiger.bb_nt.model.User;
 import com.tiger.bb_nt.security.SecUserDetailsService;
 import com.tiger.bb_nt.security.jwt.JwtAuthenticationRequest;
 import com.tiger.bb_nt.security.jwt.JwtTokenUtil;
-import com.tiger.bb_nt.service.JwtAuthService;
 import com.tiger.bb_nt.service.UserService;
 import com.tiger.bb_nt.util.UserWithJwt;
 import org.apache.commons.logging.Log;
@@ -14,12 +13,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mobile.device.Device;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -54,7 +51,7 @@ public class AuthenticationController {
     }
 
     @PostMapping()
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest, Device device) {
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest) {
         String loginLowerCase = authenticationRequest.getLogin().toLowerCase();
         User currentUser = userService.getByLogin(loginLowerCase);
         
@@ -81,7 +78,7 @@ public class AuthenticationController {
 
         // Reload code post-security so we can generate token
         final UserDetails userDetails = secUserDetailsService.loadUserByUsername(loginLowerCase);
-        final String token = jwtTokenUtil.generateToken(userDetails, device);
+        final String token = jwtTokenUtil.generateToken(userDetails);
         
         UserWithJwt userWithJwt = new UserWithJwt(token, currentUser);
 

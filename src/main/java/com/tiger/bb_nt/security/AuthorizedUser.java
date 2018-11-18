@@ -34,7 +34,7 @@ public class AuthorizedUser implements UserDetails {
     }
 
     public static String id() {
-        return get().user.getLogin();
+        return get().user.getId();
     }
 
     @Override
@@ -49,7 +49,7 @@ public class AuthorizedUser implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getEmail();
+        return user.getAlias();
     }
 
     @Override

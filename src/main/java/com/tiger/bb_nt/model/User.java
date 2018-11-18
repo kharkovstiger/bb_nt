@@ -1,5 +1,6 @@
 package com.tiger.bb_nt.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.annotation.Id;
@@ -17,6 +18,7 @@ public class User implements Serializable {
     @Id
     private String id;
     private String login;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String code;
     private String phone;
     private String alias;
