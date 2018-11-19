@@ -1,5 +1,6 @@
-package com.tiger.bb_nt.security.jwt;
+package com.tiger.bb_nt.filter;
 
+import com.tiger.bb_nt.security.jwt.JwtTokenUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;

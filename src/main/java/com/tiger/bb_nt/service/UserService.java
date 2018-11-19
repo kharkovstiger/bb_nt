@@ -9,4 +9,8 @@ public interface UserService {
     User getByLogin(String loginLowerCase);
 
     User createUser(JwtAuthenticationRequest authenticationRequest) throws LoginException;
+
+    User getCurrentUser();
+
+    void afterLogin();
 }

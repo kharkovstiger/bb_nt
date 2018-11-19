@@ -7,6 +7,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
 @RequestMapping(value = PlayerController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @CrossOrigin
@@ -22,5 +24,15 @@ public class PlayerController {
     @PutMapping(value = "/add")
     public ResponseEntity addPlayer(@RequestBody String playerId){
         return playerService.addPlayer(playerId)?new ResponseEntity(HttpStatus.OK):new ResponseEntity(HttpStatus.BAD_REQUEST);
+    }
+    
+    @GetMapping(value = "/players")
+    public ResponseEntity getTeamPlayers(HttpServletRequest request){
+        return new ResponseEntity(playerService.getTeamPlayers(), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/playersForCurrentCountry")
+    public ResponseEntity getTeamPlayersForCurrentCountry(HttpServletRequest request){
+        return new ResponseEntity(playerService.getTeamPlayersForCurrentCountry(), HttpStatus.OK);
     }
 }

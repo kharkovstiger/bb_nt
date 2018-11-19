@@ -1,10 +1,16 @@
 package com.tiger.bb_nt.service;
 
 import com.tiger.bb_nt.controller.BBAPIController;
+import com.tiger.bb_nt.model.User;
 import com.tiger.bb_nt.model.bb.Player;
+import com.tiger.bb_nt.security.AuthorizedUser;
+import com.tiger.bb_nt.util.XMLUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
+import org.w3c.dom.Document;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,12 +46,12 @@ public class DefaultBBAPIService implements BBAPIService {
         HttpEntity<String> entity = new HttpEntity<>(login(login, code, 0).getHeaders());
         ResponseEntity<String> responseJson =
                 restTemplate.exchange(BBAPIController.BASE_URL + "/player.aspx?playerid=" + id, HttpMethod.GET, entity, String.class);
-        return parsePlayer(responseJson.getBody());
-    }
-
-    private Player parsePlayer(String body) {
-        Player player=new Player();
-        return player;
+        Document document=XMLUtils.getDocument(responseJson.getBody());
+        User user= AuthorizedUser.get().getUser();
+        List<Player> players=XMLUtils.parsePlayers(document, true, user);
+        if (CollectionUtils.isEmpty(players))
+            return null;
+        return players.get(0);
     }
 
     @Override
@@ -61,7 +67,8 @@ public class DefaultBBAPIService implements BBAPIService {
         HttpEntity<String> entity = new HttpEntity<>(login(login, code, 0).getHeaders());
         ResponseEntity<String> responseJson =
                 restTemplate.exchange(BBAPIController.BASE_URL + "/roster.aspx", HttpMethod.GET, entity, String.class);
-//        return responseJson.getBody().parsePlayer(responseJson.getBody());
-        return null;
+        Document document=XMLUtils.getDocument(responseJson.getBody());
+        User user=AuthorizedUser.get().getUser();
+        return XMLUtils.parsePlayers(document, false, user);
     }
 }

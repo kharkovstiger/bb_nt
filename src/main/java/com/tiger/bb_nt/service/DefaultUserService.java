@@ -1,24 +1,21 @@
 package com.tiger.bb_nt.service;
 
 import com.tiger.bb_nt.dao.UserRepository;
+import com.tiger.bb_nt.model.Country;
 import com.tiger.bb_nt.model.Role;
 import com.tiger.bb_nt.model.User;
+import com.tiger.bb_nt.model.util.CurrentSession;
+import com.tiger.bb_nt.security.AuthorizedUser;
 import com.tiger.bb_nt.security.jwt.JwtAuthenticationRequest;
 import com.tiger.bb_nt.util.XMLUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import javax.security.auth.login.LoginException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class DefaultUserService implements UserService {
@@ -49,7 +46,8 @@ public class DefaultUserService implements UserService {
         
         User user=new User();
         user.setLogin(authenticationRequest.getLogin());
-        user.setCode(passwordEncoder.encode(authenticationRequest.getCode()));
+        //I can't encode the "password", i need it
+        user.setCode(authenticationRequest.getCode());
         user.setAlias(doc.getElementsByTagName("owner").item(0).getTextContent().trim());
         user.setId(doc.getElementsByTagName("team").item(0).getAttributes().getNamedItem("id").getNodeValue());
         Set<Role> roles=new HashSet<>();
@@ -60,5 +58,18 @@ public class DefaultUserService implements UserService {
         
         user=userRepository.save(user);
         return user;
+    }
+
+    @Override
+    public User getCurrentUser() {
+        return AuthorizedUser.get().getUser();
+    }
+
+    @Override
+    public void afterLogin() {
+        User user=getCurrentUser();
+        if (user.getCountry() != null) {
+            CurrentSession.setCountry(Country.valueOf(user.getCountry()));
+        }
     }
 }
