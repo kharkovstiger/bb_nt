@@ -1,5 +1,6 @@
 package com.tiger.bb_nt.service;
 
+import com.tiger.bb_nt.model.Country;
 import com.tiger.bb_nt.model.bb.Player;
 
 import java.util.List;
@@ -9,5 +10,7 @@ public interface PlayerService {
 
     List<Player> getTeamPlayers();
 
-    List<Player> getTeamPlayersForCurrentCountry();
+    List<Player> getTeamPlayersForCurrentCountry(Country country);
+
+    Player addBio(String playerId, String bio);
 }

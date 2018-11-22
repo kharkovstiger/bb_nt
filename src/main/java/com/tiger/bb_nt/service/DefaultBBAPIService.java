@@ -1,14 +1,13 @@
 package com.tiger.bb_nt.service;
 
 import com.tiger.bb_nt.controller.BBAPIController;
+import com.tiger.bb_nt.model.Role;
 import com.tiger.bb_nt.model.User;
 import com.tiger.bb_nt.model.bb.Player;
 import com.tiger.bb_nt.security.AuthorizedUser;
 import com.tiger.bb_nt.util.XMLUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 import org.w3c.dom.Document;
 
@@ -49,7 +48,7 @@ public class DefaultBBAPIService implements BBAPIService {
         Document document=XMLUtils.getDocument(responseJson.getBody());
         User user= AuthorizedUser.get().getUser();
         List<Player> players=XMLUtils.parsePlayers(document, true, user);
-        if (CollectionUtils.isEmpty(players))
+        if (players.isEmpty())
             return null;
         return players.get(0);
     }

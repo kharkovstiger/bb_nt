@@ -5,6 +5,7 @@ import com.tiger.bb_nt.security.AuthorizedUser;
 import com.tiger.bb_nt.security.SecUserDetailsService;
 import com.tiger.bb_nt.security.jwt.JwtAuthenticationRequest;
 import com.tiger.bb_nt.security.jwt.JwtTokenUtil;
+import com.tiger.bb_nt.service.BBAPIService;
 import com.tiger.bb_nt.service.UserService;
 import com.tiger.bb_nt.util.UserWithJwt;
 import org.apache.commons.logging.Log;
@@ -33,18 +34,14 @@ public class AuthenticationController {
 
     @Value("${jwt.header}")
     private String tokenHeader;
-
     private final AuthenticationManager authenticationManager;
-
     private final JwtTokenUtil jwtTokenUtil;
-
     private final SecUserDetailsService secUserDetailsService;
-
     private final UserService userService;
 
     @Autowired
-    public AuthenticationController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, 
-                                    SecUserDetailsService secUserDetailsService, UserService userService) {
+    public AuthenticationController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil,
+                                    SecUserDetailsService secUserDetailsService, UserService userService, BBAPIService bbapiService) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenUtil = jwtTokenUtil;
         this.secUserDetailsService = secUserDetailsService;
@@ -67,7 +64,13 @@ public class AuthenticationController {
 //                        )
 //                );
                 if (!currentUser.getCode().equals(authenticationRequest.getCode())){
-                    return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+                    boolean auth=userService.tryTologin(currentUser.getLogin(), currentUser.getCode());
+                    if (!auth)
+                        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+                    else {
+                        currentUser.setCode(authenticationRequest.getCode());
+                        currentUser=userService.updateUser(currentUser);
+                    }
                 } else {
                     Authentication authentication=new UsernamePasswordAuthenticationToken(new AuthorizedUser(currentUser),
                             null, currentUser.getRoles());
@@ -91,7 +94,7 @@ public class AuthenticationController {
         
         UserWithJwt userWithJwt = new UserWithJwt(token, currentUser);
         
-        userService.afterLogin();
+//        userService.afterLogin();
         
         // Return the token
         return ResponseEntity.ok(userWithJwt);

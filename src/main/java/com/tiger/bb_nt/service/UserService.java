@@ -1,5 +1,7 @@
 package com.tiger.bb_nt.service;
 
+import com.tiger.bb_nt.model.Country;
+import com.tiger.bb_nt.model.Role;
 import com.tiger.bb_nt.model.User;
 import com.tiger.bb_nt.security.jwt.JwtAuthenticationRequest;
 
@@ -13,4 +15,14 @@ public interface UserService {
     User getCurrentUser();
 
     void afterLogin();
+
+    boolean tryTologin(String login, String code);
+
+    User updateUser(User currentUser);
+
+    User getUser(String userId);
+
+    User changeRole(String userId, Role role);
+
+    User processRequestToChangeRole(Role role, Country country);
 }

@@ -61,6 +61,7 @@ public class XMLUtils {
 
     private static void setSkills(Player player, Document document, int i) {
         Map<Skill, Integer> skills=SkillInitializer.initialize();
-        skills.forEach((s, v) -> v=Integer.valueOf(document.getElementsByTagName(s.name()).item(i).getTextContent().trim()));
+        skills.forEach((s, v) -> skills.put(s,Integer.valueOf(document.getElementsByTagName(s.name()).item(i).getTextContent().trim())));
+        player.setSkills(skills);
     }
 }
