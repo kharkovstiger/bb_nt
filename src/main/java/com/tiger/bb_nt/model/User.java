@@ -29,6 +29,7 @@ public class User implements Serializable {
     private String email;
 
     private Set<Role> roles;
+    private Country roleCountry;
     private boolean enabled = true;
 
     public boolean hasRole(Role role) {

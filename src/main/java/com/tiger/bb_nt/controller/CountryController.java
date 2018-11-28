@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 @RestController
-@RequestMapping(value = CountryController.REST_URL, produces = MediaType.APPLICATION_XML_VALUE)
+@RequestMapping(value = CountryController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class CountryController {
 
     static final String REST_URL = "api/country";

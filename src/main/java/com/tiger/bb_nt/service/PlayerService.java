@@ -13,4 +13,12 @@ public interface PlayerService {
     List<Player> getTeamPlayersForCurrentCountry(Country country);
 
     Player addBio(String playerId, String bio);
+
+    List<Player> getPlayersForNT();
+
+    void addPlayers(List<Player> players);
+
+    void deletePlayers(List<Player> players);
+
+    Player addPlayer(Player player);
 }

@@ -2,6 +2,7 @@ package com.tiger.bb_nt.service;
 
 import com.tiger.bb_nt.dao.PlayerRepository;
 import com.tiger.bb_nt.model.Country;
+import com.tiger.bb_nt.model.Role;
 import com.tiger.bb_nt.model.User;
 import com.tiger.bb_nt.model.bb.Player;
 import com.tiger.bb_nt.model.bb.Skill;
@@ -74,6 +75,7 @@ public class DefaultPlayerService implements PlayerService {
     @Override
     public List<Player> getTeamPlayersForCurrentCountry(Country country) {
         List<Player> players=getTeamPlayers();
+        players.forEach(p -> p.setInDB(playerRepository.exist(p.getId())));
         return players.stream().filter(p -> p.getNationality().equals(country.name())).collect(Collectors.toList());
     }
 
@@ -85,5 +87,26 @@ public class DefaultPlayerService implements PlayerService {
             playerRepository.save(player);
         }
         return player;
+    }
+
+    @Override
+    public List<Player> getPlayersForNT() {
+        User user=userService.getCurrentUser();
+        return playerRepository.findPlayersForNT(user.getRoles().contains(Role.ROLE_U21NT), user.getRoleCountry());
+    }
+
+    @Override
+    public void addPlayers(List<Player> players) {
+        playerRepository.saveAll(players);
+    }
+
+    @Override
+    public void deletePlayers(List<Player> players) {
+        playerRepository.deleteAll(players);
+    }
+
+    @Override
+    public Player addPlayer(Player player) {
+        return playerRepository.save(player);
     }
 }

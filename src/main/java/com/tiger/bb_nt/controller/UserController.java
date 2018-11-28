@@ -12,7 +12,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(value = "api/user", produces = MediaType.APPLICATION_XML_VALUE)
+@RequestMapping(value = "api/user", produces = MediaType.APPLICATION_JSON_VALUE)
 @CrossOrigin
 public class UserController {
     
@@ -42,8 +42,8 @@ public class UserController {
     
     @Secured("ROLE_ADMIN")
     @PostMapping(value = "/{userId}/role/change/{role}")
-    public ResponseEntity changeUserRole(@PathVariable Role role, @PathVariable String userId){
-        return new ResponseEntity(userService.changeRole(userId, role), HttpStatus.OK);
+    public ResponseEntity changeUserRole(@PathVariable String role, @PathVariable String userId, @RequestParam("country") String country){
+        return new ResponseEntity(userService.changeRole(userId, Role.valueOf(role), Country.valueOf(country)), HttpStatus.OK);
     }
     
     @PostMapping(value = "/role/{role}/request")

@@ -1,6 +1,7 @@
 package com.tiger.bb_nt.controller;
 
 import com.tiger.bb_nt.model.Country;
+import com.tiger.bb_nt.model.bb.Player;
 import com.tiger.bb_nt.service.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = PlayerController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -44,5 +46,32 @@ public class PlayerController {
     @PutMapping(value = "/addBio/{playerId}")
     public ResponseEntity addBio(@PathVariable String playerId, @RequestBody String bio){
         return new ResponseEntity(playerService.addBio(playerId, bio), HttpStatus.OK);
+    }
+    
+    @Secured({"ROLE_NT", "ROLE_U21NT"})
+    @GetMapping(value = "/get")
+    public ResponseEntity getPlayersForNT(){
+        return new ResponseEntity(playerService.getPlayersForNT(), HttpStatus.OK);
+    }
+
+    @Secured({"ROLE_NT","ROLE_U21NT"})
+    @PutMapping(value = "/add")
+    public ResponseEntity addPlayers(@RequestBody List<Player> players){
+        playerService.addPlayers(players);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @Secured({"ROLE_NT","ROLE_U21NT"})
+    @DeleteMapping(value = "/delete")
+    public ResponseEntity deletePlayers(@RequestBody List<Player> players){
+        playerService.deletePlayers(players);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+    
+    @Secured({"ROLE_NT","ROLE_U21NT"})
+    @PutMapping(value = "/update/")
+    public ResponseEntity updatePlayer(@RequestBody Player player){
+        playerService.addPlayer(player);
+        return new ResponseEntity(HttpStatus.OK);
     }
 }

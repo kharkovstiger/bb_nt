@@ -1,5 +1,7 @@
 package com.tiger.bb_nt.dao;
 
+import com.tiger.bb_nt.model.Country;
+import com.tiger.bb_nt.model.Role;
 import com.tiger.bb_nt.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -39,5 +41,11 @@ public class DefaultUserRepository implements UserRepository {
     @Override
     public List<User> findAll() {
         return crudUserRepository.findAll();
+    }
+
+    @Override
+    public User findByRoleAndRoleCountry(Role role, Country country) {
+        List<User> users = crudUserRepository.findByRoleCountry(country);
+        return users.stream().filter(u -> u.getRoles().contains(role)).findFirst().orElse(null);
     }
 }

@@ -45,4 +45,6 @@ public class DefaultPlayer implements Serializable {
             lastUps=new HashMap<>();
         lastUps.putAll(map);
     }
+    
+    private boolean inDB;
 }

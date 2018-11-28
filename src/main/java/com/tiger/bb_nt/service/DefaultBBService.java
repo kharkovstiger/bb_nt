@@ -16,8 +16,8 @@ public class DefaultBBService implements BBService {
     public boolean checkIfNTManager(User user, Role role, Country country) {
         ResponseEntity<String> responseJson=
                 restTemplate.getForEntity("http://www.buzzerbeater.com/country/"+country.getCode()+"/"
-                        +(role.equals(Role.U21NT)?"j":"")+"nt/overview.aspx", String.class);
+                        +(role.equals(Role.ROLE_U21NT)?"j":"")+"nt/overview.aspx", String.class);
         String managerLogin=responseJson.getBody().split("Manager:")[1].split("</a")[0].split(">")[2];
-        return user.getLogin().equals(managerLogin);
+        return user.getAlias().equals(managerLogin);
     }
 }

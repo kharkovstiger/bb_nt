@@ -22,7 +22,7 @@ public interface UserService {
 
     User getUser(String userId);
 
-    User changeRole(String userId, Role role);
+    User changeRole(String userId, Role role, Country country);
 
     User processRequestToChangeRole(Role role, Country country);
 }

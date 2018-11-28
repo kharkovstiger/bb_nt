@@ -52,7 +52,7 @@ public class DefaultUserService implements UserService {
         user.setAlias(doc.getElementsByTagName("owner").item(0).getTextContent().trim());
         user.setId(doc.getElementsByTagName("team").item(0).getAttributes().getNamedItem("id").getNodeValue());
         Set<Role> roles=new HashSet<>();
-        roles.add(Role.USER);
+        roles.add(Role.ROLE_USER);
         user.setRoles(roles);
         user.setTeam(doc.getElementsByTagName("teamName").item(0).getTextContent());
         user.setCountry(doc.getElementsByTagName("country").item(0).getTextContent());
@@ -95,13 +95,17 @@ public class DefaultUserService implements UserService {
     }
 
     @Override
-    public User changeRole(String userId, Role role) {
+    public User changeRole(String userId, Role role, Country country) {
         User user=userRepository.findOne(userId);
         if (user != null){
             if (user.hasRole(role)){
                 user.deleteRole(role);
+                if (role.equals(Role.ROLE_U21NT) || role.equals(Role.ROLE_NT))
+                    user.setRoleCountry(null);
             } else {
                 user.addRole(role);
+                if (role.equals(Role.ROLE_U21NT) || role.equals(Role.ROLE_NT))
+                    user.setRoleCountry(country);
             }
             userRepository.save(user);
         }
@@ -113,7 +117,14 @@ public class DefaultUserService implements UserService {
         User user=getCurrentUser();
         boolean nt=bbService.checkIfNTManager(user, role, country);
         if (nt){
+            User currentManager=userRepository.findByRoleAndRoleCountry(role, country);
+            if (currentManager!=null && !currentManager.equals(user)){
+                currentManager.deleteRole(role);
+                currentManager.setRoleCountry(null);
+                userRepository.save(currentManager);
+            }
             user.addRole(role);
+            user.setRoleCountry(country);
             userRepository.save(user);
         }
         return user;
