@@ -9,13 +9,13 @@ import com.tiger.bb_nt.model.bb.Skill;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,12 +24,15 @@ public class DefaultPlayerService implements PlayerService {
     private final PlayerRepository playerRepository;
     private final BBAPIService bbapiService;
     private final UserService userService;
+    private final DateTimeFormatter sdf;
 
     @Autowired
     public DefaultPlayerService(PlayerRepository playerRepository, BBAPIService bbapiService, UserService userService) {
         this.playerRepository = playerRepository;
         this.bbapiService = bbapiService;
         this.userService = userService;
+        sdf=DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        sdf.withZone(ZoneId.of("UTC"));
     }
 
     @Override
@@ -37,14 +40,14 @@ public class DefaultPlayerService implements PlayerService {
         User currentUser=userService.getCurrentUser();
         Player player=bbapiService.getPlayer(playerId, currentUser.getLogin(), currentUser.getCode());
         Player existedPlayer=playerRepository.findOne(playerId);
+        player.setLastUpdate(LocalDate.now());
         if (existedPlayer != null){
-            player.setLastUpdate(LocalDate.now());
             List<Skill> ups=getSkillDifference(player, existedPlayer);
             if (!ups.isEmpty()) {
                 LocalDate date=getLastFridayDate();
                 player.setLastUp(date);
-                Map<LocalDate, List<Skill>> map=new HashMap<>();
-                map.put(date, ups);
+                Map<String, List<Skill>> map=new HashMap<>();
+                map.put(date.format(sdf), ups);
                 player.addUps(map);
             }
         }

@@ -29,9 +29,8 @@ public class DefaultPlayer implements Serializable {
     
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
     private LocalDate lastUp;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
-    private Map<LocalDate, List<Skill>> lastUps;
+    
+    private Map<String, List<Skill>> lastUps;
     
     private Integer gameShape;
     private Integer potential;
@@ -40,7 +39,7 @@ public class DefaultPlayer implements Serializable {
     private Integer height;
     private Integer dmi;
 
-    public void addUps(Map<LocalDate, List<Skill>> map) {
+    public void addUps(Map<String, List<Skill>> map) {
         if (lastUps==null)
             lastUps=new HashMap<>();
         lastUps.putAll(map);
