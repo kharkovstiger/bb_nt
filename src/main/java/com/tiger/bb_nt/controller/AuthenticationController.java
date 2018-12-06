@@ -64,7 +64,7 @@ public class AuthenticationController {
 //                        )
 //                );
                 if (!currentUser.getCode().equals(authenticationRequest.getCode())){
-                    boolean auth=userService.tryTologin(currentUser.getLogin(), currentUser.getCode());
+                    boolean auth=userService.tryTologin(currentUser.getLogin(), authenticationRequest.getCode());
                     if (!auth)
                         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
                     else {
