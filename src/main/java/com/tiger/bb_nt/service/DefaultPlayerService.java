@@ -72,13 +72,20 @@ public class DefaultPlayerService implements PlayerService {
     @Override
     public List<Player> getTeamPlayers() {
         User currentUser=userService.getCurrentUser();
-        return bbapiService.getPlayers(currentUser.getLogin(), currentUser.getCode());
+        List<Player> result=bbapiService.getPlayers(currentUser.getLogin(), currentUser.getCode());
+        result.forEach(p -> {
+            Player player=playerRepository.findOne(p.getId());
+            if (player != null){
+                p.setInDB(true);
+                p.setLastUpdate(player.getLastUpdate());
+            }
+        });
+        return result;
     }
 
     @Override
     public List<Player> getTeamPlayersForCurrentCountry(Country country) {
         List<Player> players=getTeamPlayers();
-        players.forEach(p -> p.setInDB(playerRepository.exist(p.getId())));
         return players.stream().filter(p -> p.getNationality().equals(country.name())).collect(Collectors.toList());
     }
 
