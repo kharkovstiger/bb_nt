@@ -86,7 +86,12 @@ public class DefaultUserService implements UserService {
 
     @Override
     public User updateUser(User currentUser) {
-        return userRepository.save(currentUser);
+        User existing=userRepository.findOne(currentUser.getId());
+        if (existing!=null){
+            currentUser.setCode(existing.getCode());
+            return userRepository.save(currentUser);
+        }
+        return null;
     }
 
     @Override
