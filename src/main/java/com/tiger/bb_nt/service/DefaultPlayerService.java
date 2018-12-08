@@ -86,7 +86,7 @@ public class DefaultPlayerService implements PlayerService {
     @Override
     public List<Player> getTeamPlayersForCurrentCountry(Country country) {
         List<Player> players=getTeamPlayers();
-        return players.stream().filter(p -> p.getNationality().equals(country.name())).collect(Collectors.toList());
+        return players.stream().filter(p -> country.name().equals(p.getNationality())).collect(Collectors.toList());
     }
 
     @Override
