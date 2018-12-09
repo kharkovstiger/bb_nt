@@ -37,9 +37,9 @@ public class PlayerController {
     }
 
     @GetMapping(value = "/playersForCurrentCountry")
-    public ResponseEntity getTeamPlayersForCurrentCountry(HttpSession session){
-        Country country = (Country) session.getAttribute("country");
-        return new ResponseEntity(playerService.getTeamPlayersForCurrentCountry(country), HttpStatus.OK);
+    public ResponseEntity getTeamPlayersForCurrentCountry(HttpSession session, @RequestParam("country") String country){
+//        Country country = (Country) session.getAttribute("country");
+        return new ResponseEntity(playerService.getTeamPlayersForCurrentCountry(Country.valueOf(country)), HttpStatus.OK);
     }
 
     @Secured({"ROLE_NT", "ROLE_U21NT"})
