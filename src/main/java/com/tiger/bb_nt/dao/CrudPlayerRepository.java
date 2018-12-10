@@ -25,7 +25,7 @@ public interface CrudPlayerRepository extends MongoRepository<Player, String> {
     @Query(value = "{'nationality':?0}")
     List<Player> findPlayersForNT(Country roleCountry);
 
-    @Query(value = "{'nationality':?0, 'age':{$lt: 21}}")
+    @Query(value = "{'nationality':?0, 'age':{$lt: 22}}")
     List<Player> findPlayersForU21NT(Country roleCountry);
 
     @Override
