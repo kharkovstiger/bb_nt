@@ -4,9 +4,11 @@ import com.tiger.bb_nt.dao.PostRepository;
 import com.tiger.bb_nt.model.Country;
 import com.tiger.bb_nt.model.Post;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class DefaultPostService implements PostService {
 
     private final PostRepository postRepository;
