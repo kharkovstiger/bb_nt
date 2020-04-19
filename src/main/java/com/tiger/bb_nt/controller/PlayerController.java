@@ -25,12 +25,12 @@ public class PlayerController {
     public PlayerController(PlayerService playerService) {
         this.playerService = playerService;
     }
-    
+
     @PutMapping(value = "/add/{playerId}")
     public ResponseEntity addPlayer(@PathVariable String playerId){
         return playerService.addPlayer(playerId)?new ResponseEntity(HttpStatus.OK):new ResponseEntity(HttpStatus.BAD_REQUEST);
     }
-    
+
     @GetMapping(value = "/players")
     public ResponseEntity getTeamPlayers(HttpServletRequest request){
         return new ResponseEntity(playerService.getTeamPlayers(), HttpStatus.OK);
@@ -47,7 +47,7 @@ public class PlayerController {
     public ResponseEntity addBio(@PathVariable String playerId, @RequestBody String bio){
         return new ResponseEntity(playerService.addBio(playerId, bio), HttpStatus.OK);
     }
-    
+
     @Secured({"ROLE_NT", "ROLE_U21NT"})
     @GetMapping(value = "/get")
     public ResponseEntity getPlayersForNT(){
@@ -67,7 +67,7 @@ public class PlayerController {
         playerService.deletePlayers(players);
         return new ResponseEntity(HttpStatus.OK);
     }
-    
+
     @Secured({"ROLE_NT","ROLE_U21NT"})
     @PutMapping(value = "/update/")
     public ResponseEntity updatePlayer(@RequestBody Player player){
