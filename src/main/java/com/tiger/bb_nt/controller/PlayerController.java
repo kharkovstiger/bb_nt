@@ -62,9 +62,9 @@ public class PlayerController {
     }
 
     @Secured({"ROLE_NT","ROLE_U21NT"})
-    @DeleteMapping(value = "/delete")
-    public ResponseEntity deletePlayers(@RequestBody List<Player> players){
-        playerService.deletePlayers(players);
+    @DeleteMapping(value = "/delete/playerId")
+    public ResponseEntity deletePlayer(@PathVariable String playerId){
+        playerService.deletePlayers(playerId);
         return new ResponseEntity(HttpStatus.OK);
     }
 

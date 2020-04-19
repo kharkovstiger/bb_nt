@@ -18,4 +18,6 @@ public interface PlayerRepository {
     void saveAll(List<Player> players);
 
     void deleteAll(List<Player> players);
+
+    void deleteById(String playerId);
 }

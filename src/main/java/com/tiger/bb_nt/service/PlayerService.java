@@ -18,7 +18,7 @@ public interface PlayerService {
 
     void addPlayers(List<Player> players);
 
-    void deletePlayers(List<Player> players);
+    void deletePlayers(String playerId);
 
     Player addPlayer(Player player);
 }

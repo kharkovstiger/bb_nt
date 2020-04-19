@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 public class DefaultPlayerRepository implements PlayerRepository {
-    
+
     private final CrudPlayerRepository crudPlayerRepository;
 
     @Autowired
@@ -45,5 +45,10 @@ public class DefaultPlayerRepository implements PlayerRepository {
     @Override
     public void deleteAll(List<Player> players) {
         crudPlayerRepository.deleteAll(players);
+    }
+
+    @Override
+    public void deleteById(String playerId) {
+        crudPlayerRepository.deleteById(playerId);
     }
 }

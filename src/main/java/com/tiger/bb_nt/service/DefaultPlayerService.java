@@ -9,7 +9,6 @@ import com.tiger.bb_nt.model.bb.Skill;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -111,8 +110,8 @@ public class DefaultPlayerService implements PlayerService {
     }
 
     @Override
-    public void deletePlayers(List<Player> players) {
-        playerRepository.deleteAll(players);
+    public void deletePlayers(String playerId) {
+        playerRepository.deleteById(playerId);
     }
 
     @Override
