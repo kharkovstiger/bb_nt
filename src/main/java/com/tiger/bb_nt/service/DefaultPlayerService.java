@@ -118,4 +118,9 @@ public class DefaultPlayerService implements PlayerService {
     public Player addPlayer(Player player) {
         return playerRepository.save(player);
     }
+
+    @Override
+    public Player getPlayerForNT(String playerId) {
+        return playerRepository.findOne(playerId);
+    }
 }

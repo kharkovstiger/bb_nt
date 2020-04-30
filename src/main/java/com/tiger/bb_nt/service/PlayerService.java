@@ -21,4 +21,6 @@ public interface PlayerService {
     void deletePlayers(String playerId);
 
     Player addPlayer(Player player);
+
+    Player getPlayerForNT(String playerId);
 }

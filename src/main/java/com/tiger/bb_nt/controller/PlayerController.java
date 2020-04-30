@@ -54,6 +54,12 @@ public class PlayerController {
         return new ResponseEntity(playerService.getPlayersForNT(), HttpStatus.OK);
     }
 
+    @Secured({"ROLE_NT", "ROLE_U21NT"})
+    @GetMapping(value = "/get/{playerId}")
+    public ResponseEntity getPlayerForNT(@PathVariable String playerId){
+        return new ResponseEntity(playerService.getPlayerForNT(playerId), HttpStatus.OK);
+    }
+
     @Secured({"ROLE_NT","ROLE_U21NT"})
     @PutMapping(value = "/add")
     public ResponseEntity addPlayers(@RequestBody List<Player> players){
