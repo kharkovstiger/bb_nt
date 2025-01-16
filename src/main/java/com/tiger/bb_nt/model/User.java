@@ -29,5 +29,18 @@ public class User implements Serializable {
     private String email;
 
     private Set<Role> roles;
+    private Country roleCountry;
     private boolean enabled = true;
+
+    public boolean hasRole(Role role) {
+        return roles.contains(role);
+    }
+
+    public void deleteRole(Role role) {
+        roles.remove(role);
+    }
+
+    public void addRole(Role role) {
+        roles.add(role);
+    }
 }

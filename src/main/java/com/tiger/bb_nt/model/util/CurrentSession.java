@@ -20,4 +20,5 @@ public class CurrentSession {
     public static String getCountry(){
         return ourInstance.country;
     }
+  
 }

@@ -3,6 +3,7 @@ package com.tiger.bb_nt.filter;
 import com.tiger.bb_nt.model.util.CurrentSession;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -23,6 +24,14 @@ public class CountrySessionFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         Arrays.stream(request.getCookies()).filter(c -> c.getName().equals("country")).findFirst()
                 .ifPresent(c -> CurrentSession.setCountry(c.getValue()));
+
+//        if (request.getCookies()!=null) {
+//            Arrays.stream(request.getCookies())
+//                    .filter(c -> "country".equals(c.getName()))
+//                    .map(Cookie::getValue)
+//                    .findFirst()
+//                    .ifPresent(country -> session.setCountry(Country.valueOf(country)));
+//        }
 
         filterChain.doFilter(request, response);
     }
