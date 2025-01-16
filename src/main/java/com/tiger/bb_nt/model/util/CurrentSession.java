@@ -1,14 +1,24 @@
 package com.tiger.bb_nt.model.util;
 
-import com.tiger.bb_nt.model.Country;
-import lombok.Data;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
-@Component
-//@Scope("session")
-@Data
 public class CurrentSession {
 
-    private Country country;    
+    private String country;
+
+    private static CurrentSession ourInstance = new CurrentSession();
+
+    public static CurrentSession getInstance() {
+        return ourInstance;
+    }
+
+    private CurrentSession() {
+    }
+
+    public static void setCountry(String country){
+        ourInstance.country=country;
+    }
+
+    public static String getCountry(){
+        return ourInstance.country;
+    }
+  
 }
