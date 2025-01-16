@@ -1,5 +1,6 @@
 package com.tiger.bb_nt.config;
 
+import com.tiger.bb_nt.filter.CountrySessionFilter;
 import com.tiger.bb_nt.security.SecUserDetailsService;
 import com.tiger.bb_nt.security.jwt.JwtAuthenticationEntryPoint;
 import com.tiger.bb_nt.filter.JwtAuthenticationTokenFilter;
@@ -46,6 +47,11 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Bean
     public JwtAuthenticationTokenFilter authenticationTokenFilterBean() throws Exception {
         return new JwtAuthenticationTokenFilter();
+    }
+    
+    @Bean
+    public CountrySessionFilter countrySessionFilterBean(){
+        return new CountrySessionFilter();
     }
 
     @Override

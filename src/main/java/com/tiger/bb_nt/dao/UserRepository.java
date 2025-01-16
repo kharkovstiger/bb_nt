@@ -1,5 +1,7 @@
 package com.tiger.bb_nt.dao;
 
+import com.tiger.bb_nt.model.Country;
+import com.tiger.bb_nt.model.Role;
 import com.tiger.bb_nt.model.User;
 
 import java.util.List;
@@ -17,4 +19,6 @@ public interface UserRepository {
     User getByLogin(String login);
 
     List<User> findAll();
+
+    User findByRoleAndRoleCountry(Role role, Country country);
 }

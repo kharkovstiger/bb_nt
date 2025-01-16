@@ -49,7 +49,7 @@ public class AuthorizedUser implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getAlias();
+        return user.getLogin();
     }
 
     @Override

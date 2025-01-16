@@ -1,9 +1,11 @@
 package com.tiger.bb_nt.controller;
 
 import com.tiger.bb_nt.model.User;
+import com.tiger.bb_nt.security.AuthorizedUser;
 import com.tiger.bb_nt.security.SecUserDetailsService;
 import com.tiger.bb_nt.security.jwt.JwtAuthenticationRequest;
 import com.tiger.bb_nt.security.jwt.JwtTokenUtil;
+import com.tiger.bb_nt.service.BBAPIService;
 import com.tiger.bb_nt.service.UserService;
 import com.tiger.bb_nt.util.UserWithJwt;
 import org.apache.commons.logging.Log;
@@ -32,18 +34,14 @@ public class AuthenticationController {
 
     @Value("${jwt.header}")
     private String tokenHeader;
-
     private final AuthenticationManager authenticationManager;
-
     private final JwtTokenUtil jwtTokenUtil;
-
     private final SecUserDetailsService secUserDetailsService;
-
     private final UserService userService;
 
     @Autowired
-    public AuthenticationController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, 
-                                    SecUserDetailsService secUserDetailsService, UserService userService) {
+    public AuthenticationController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil,
+                                    SecUserDetailsService secUserDetailsService, UserService userService, BBAPIService bbapiService) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenUtil = jwtTokenUtil;
         this.secUserDetailsService = secUserDetailsService;
@@ -58,13 +56,27 @@ public class AuthenticationController {
         if (currentUser!=null) {
             // Perform the security
             try {
-                final Authentication authentication = authenticationManager.authenticate(
-                        new UsernamePasswordAuthenticationToken(
-                                loginLowerCase,
-                                authenticationRequest.getCode()
-                        )
-                );
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                //I can't encode the "password", i need it
+//                final Authentication authentication = authenticationManager.authenticate(
+//                        new UsernamePasswordAuthenticationToken(
+//                                loginLowerCase,
+//                                authenticationRequest.getCode()
+//                        )
+//                );
+                if (!currentUser.getCode().equals(authenticationRequest.getCode())){
+                    boolean auth=userService.tryTologin(currentUser.getLogin(), authenticationRequest.getCode());
+                    if (!auth)
+                        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+                    else {
+                        currentUser.setCode(authenticationRequest.getCode());
+                        currentUser=userService.updateUser(currentUser);
+                    }
+                } else {
+                    Authentication authentication=new UsernamePasswordAuthenticationToken(new AuthorizedUser(currentUser),
+                            null, currentUser.getRoles());
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+                
             } catch (BadCredentialsException e) {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -81,7 +93,9 @@ public class AuthenticationController {
         final String token = jwtTokenUtil.generateToken(userDetails);
         
         UserWithJwt userWithJwt = new UserWithJwt(token, currentUser);
-
+        
+//        userService.afterLogin();
+        
         // Return the token
         return ResponseEntity.ok(userWithJwt);
     }
